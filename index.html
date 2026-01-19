@@ -40,7 +40,7 @@
         
         .card-header { height: 90px; display: grid; grid-template-columns: 80px 1fr 80px; align-items: center; border-bottom: 2px solid #000; z-index: 1; }
         .logo-container { width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .logo-box { max-width: 100%; max-height: 100%; object-fit: contain; } /* लोगो साइज फिक्स */
+        .logo-box { max-width: 100%; max-height: 100%; object-fit: contain; }
         
         .school-title-area { text-align: center; }
         .school-title-area h2 { margin: 0; color: var(--accent); font-size: 21px; font-weight: 800; line-height: 1.1; }
@@ -54,7 +54,10 @@
         .footer-line { display: flex; justify-content: space-between; background: #000; color: white; padding: 6px 12px; border-radius: 5px; font-size: 13px; }
         .card-actions { display: flex; gap: 10px; justify-content: center; margin-top: 5px; margin-bottom: 15px; }
 
-        @media print { .no-print, #login-screen, .card-actions { display: none !important; } }
+        /* Print Settings to Hide Buttons in PDF */
+        @media print { 
+            .no-print, #login-screen, .card-actions { display: none !important; } 
+        }
     </style>
 </head>
 <body>
@@ -181,14 +184,28 @@
     async function saveAsPDF() {
         const pages = document.querySelectorAll('.page');
         if(pages.length === 0) return alert("पहले कार्ड तैयार करें!");
+        
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF('p', 'mm', 'a4');
+
+        // Hide buttons manually before capturing to be double sure
+        const actionButtons = document.querySelectorAll('.card-actions');
+        actionButtons.forEach(btn => btn.style.display = 'none');
+
         for (let i = 0; i < pages.length; i++) {
-            const canvas = await html2canvas(pages[i], { scale: 2 });
+            const canvas = await html2canvas(pages[i], { 
+                scale: 2,
+                useCORS: true,
+                logging: false
+            });
             const imgData = canvas.toDataURL('image/jpeg', 0.8);
             if (i > 0) pdf.addPage();
             pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
         }
+        
+        // Show buttons back for dashboard use
+        actionButtons.forEach(btn => btn.style.display = 'flex');
+        
         pdf.save('Invitations.pdf');
     }
 
@@ -203,7 +220,7 @@
     function sendWA(person, father, className, mobile) {
         const s = document.getElementById('sName').value, h = document.getElementById('hText').value, m = document.getElementById('mText').value;
         const e = document.getElementById('eText').value, v = document.getElementById('vPlace').value, vt = document.getElementById('vText').value;
-        let d = father ? `\n*छात्र:* ${person}\n*पिता:* श्री ${father}\n*कक्षा:* ${className}` : `\n*अतिथि:* ${person}`;
+        let d = father ? `\n*छात्र:* ${person}\n*पिता:* Mr. ${father}\n*कक्षा:* ${className}` : `\n*अतिथि:* ${person}`;
         const final = `*${s}*\n\n*${h}*\n\nआदरणीय अभिभावक,\n${m}\n${d}\n\n${e}\n${v}\n\n*विनीत:* ${vt}`;
         window.open(`https://wa.me/${mobile ? '91'+mobile : ''}?text=${encodeURIComponent(final)}`, '_blank');
     }
@@ -227,7 +244,7 @@
         }
 
         const build = (d) => {
-            let info = (d.type==='guest') ? `अतिथि: ${d.c1}` : `<span>कक्षा: ${d.c1}</span> <span>छात्र: ${d.c2}</span> <span>पिता: श्री ${d.c3}</span>`;
+            let info = (d.type==='guest') ? `अतिथि: ${d.c1}` : `<span>कक्षा: ${d.c1}</span> <span>छात्र: ${d.c2}</span> <span>पिता: Mr. ${d.c3}</span>`;
             return `
             <div class="card-unit">
                 <div class="card-frame">
@@ -244,12 +261,12 @@
                     </div>
                     <div class="card-footer">
                         <div class="footer-line"><span>${eText}</span><span>${vPlace}</span></div>
-                        <div style="text-align:right; font-weight:bold; margin-top:3px; font-size:14px;">विनीत: ${vText}</div>
+                        <div style="text-align:right; font-weight:bold; margin-top:3px; font-size:14px;">विनीत: ${vt = vText}</div>
                     </div>
                 </div>
                 <div class="card-actions no-print">
-                    <button class="btn-dl" onclick="saveCard(this)">💾 Save Photo</button>
-                    <button class="btn-wa" onclick="sendWA('${d.c2 || d.c1}', '${d.c3}', '${d.c1}', '${d.mob}')">📱 WhatsApp</button>
+                    <button class="btn-dl" onclick="saveCard(this)" style="background:#444; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer;">💾 Save Photo</button>
+                    <button class="btn-wa" onclick="sendWA('${d.c2 || d.c1}', '${d.c3}', '${d.c1}', '${d.mob}')" style="background:#25D366; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer;">📱 WhatsApp</button>
                 </div>
             </div>`;
         };
