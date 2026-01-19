@@ -26,13 +26,13 @@
         .sidebar { background: white; padding: 25px; border-right: 1px solid #e2e8f0; height: 100vh; overflow-y: auto; position: sticky; top: 0; box-sizing: border-box; }
         label { display: block; font-size: 13px; font-weight: bold; color: #64748b; margin-top: 10px; }
         input, textarea, select { width: 100%; padding: 10px; border: 1.2px solid #cbd5e1; border-radius: 8px; margin-bottom: 5px; box-sizing: border-box; }
-        .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; color: white; margin-top: 10px; }
         .btn-gen { background: var(--accent); color: white; }
         .btn-pdf { background: #000; color: white; }
         .btn-print { background: var(--primary); color: white; }
         .btn-clear { background: #64748b; color: white; }
 
-        /* --- Card Layout Fixes --- */
+        /* --- Card Layout --- */
         .page { background: white; width: 210mm; min-height: 296mm; display: flex; flex-direction: column; align-items: center; margin: 0 auto; padding: 5mm 0; box-sizing: border-box; }
         .card-unit { width: 190mm; margin-bottom: 5mm; page-break-inside: avoid; display: flex; flex-direction: column; align-items: center; }
         .card-frame { width: 190mm; height: 128mm; border: 8px double var(--primary); padding: 15px; position: relative; background: #fff; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; overflow: hidden; }
@@ -54,10 +54,7 @@
         .footer-line { display: flex; justify-content: space-between; background: #000; color: white; padding: 6px 12px; border-radius: 5px; font-size: 13px; }
         .card-actions { display: flex; gap: 10px; justify-content: center; margin-top: 5px; margin-bottom: 15px; }
 
-        /* Print Settings to Hide Buttons in PDF */
-        @media print { 
-            .no-print, #login-screen, .card-actions { display: none !important; } 
-        }
+        @media print { .no-print, #login-screen, .card-actions { display: none !important; } }
     </style>
 </head>
 <body>
@@ -73,7 +70,7 @@
     <div class="login-card">
         <div class="instruction-side">
             <h2 style="color:var(--primary)">📖 मोड उपयोग मार्गदर्शिका</h2>
-            <div class="step-box"><b>1. 📊 एक्सेल बल्क मोड</b><p>Excel से क्लास, नाम, पिता, मोबाइल पेस्ट करें। मोबाइल नंबर <b>Optional</b> है।</p></div>
+            <div class="step-box"><b>1. 📊 एक्सेल बल्क मोड</b><p>Excel से क्लास, नाम, पिता, मोबाइल पेस्ट करें।</p></div>
             <div class="step-box"><b>2. ✏️ मैन्युअल छात्र</b><p>एक छात्र का कार्ड बनाने के लिए। इसमें क्लास, नाम और पिता भरें।</p></div>
             <div class="step-box"><b>3. 👤 अतिथि मोड</b><p>अतिथियों के लिए कार्ड। इसमें कक्षा और पिता का नाम स्वतः हट जाएगा।</p></div>
             <div class="step-box"><b>💾 PDF एवं फोटो:</b><p>'Save as PDF' से पूरी फाइल और 'Save Photo' से सिंगल कार्ड सेव करें।</p></div>
@@ -188,24 +185,17 @@
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF('p', 'mm', 'a4');
 
-        // Hide buttons manually before capturing to be double sure
         const actionButtons = document.querySelectorAll('.card-actions');
         actionButtons.forEach(btn => btn.style.display = 'none');
 
         for (let i = 0; i < pages.length; i++) {
-            const canvas = await html2canvas(pages[i], { 
-                scale: 2,
-                useCORS: true,
-                logging: false
-            });
+            const canvas = await html2canvas(pages[i], { scale: 2 });
             const imgData = canvas.toDataURL('image/jpeg', 0.8);
             if (i > 0) pdf.addPage();
             pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
         }
         
-        // Show buttons back for dashboard use
         actionButtons.forEach(btn => btn.style.display = 'flex');
-        
         pdf.save('Invitations.pdf');
     }
 
@@ -220,7 +210,7 @@
     function sendWA(person, father, className, mobile) {
         const s = document.getElementById('sName').value, h = document.getElementById('hText').value, m = document.getElementById('mText').value;
         const e = document.getElementById('eText').value, v = document.getElementById('vPlace').value, vt = document.getElementById('vText').value;
-        let d = father ? `\n*छात्र:* ${person}\n*पिता:* Mr. ${father}\n*कक्षा:* ${className}` : `\n*अतिथि:* ${person}`;
+        let d = father ? `\n*Name:* ${person}\n*Father:* Mr. ${father}\n*Class:* ${className}` : `\n*Guest:* ${person}`;
         const final = `*${s}*\n\n*${h}*\n\nआदरणीय अभिभावक,\n${m}\n${d}\n\n${e}\n${v}\n\n*विनीत:* ${vt}`;
         window.open(`https://wa.me/${mobile ? '91'+mobile : ''}?text=${encodeURIComponent(final)}`, '_blank');
     }
@@ -244,7 +234,7 @@
         }
 
         const build = (d) => {
-            let info = (d.type==='guest') ? `अतिथि: ${d.c1}` : `<span>कक्षा: ${d.c1}</span> <span>छात्र: ${d.c2}</span> <span>पिता: Mr. ${d.c3}</span>`;
+            let info = (d.type==='guest') ? `Guest: ${d.c1}` : `<span>Class: ${d.c1}</span> <span>Name: ${d.c2}</span> <span>Father: Mr. ${d.c3}</span>`;
             return `
             <div class="card-unit">
                 <div class="card-frame">
@@ -261,7 +251,7 @@
                     </div>
                     <div class="card-footer">
                         <div class="footer-line"><span>${eText}</span><span>${vPlace}</span></div>
-                        <div style="text-align:right; font-weight:bold; margin-top:3px; font-size:14px;">विनीत: ${vt = vText}</div>
+                        <div style="text-align:right; font-weight:bold; margin-top:3px; font-size:14px;">विनीत: ${vText}</div>
                     </div>
                 </div>
                 <div class="card-actions no-print">
