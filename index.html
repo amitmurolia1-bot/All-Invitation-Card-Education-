@@ -5,90 +5,81 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart School Portal | Amit Murolia</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Hind:wght@400;500;600&display=swap');
-        
-        :root { --primary: #1e3a8a; --accent: #b91c1c; --gold: #facc15; --dark-blue: #0a192f; }
-        
+        :root { --primary: #1e3a8a; --accent: #b91c1c; --gold: #facc15; }
         body { font-family: 'Hind', sans-serif; background: #f1f5f9; margin: 0; user-select: none; }
 
-        /* --- Home & Login --- */
+        /* --- Login Screen --- */
         #login-screen { position: fixed; inset: 0; background: radial-gradient(circle at center, #112240 0%, #0a192f 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10000; }
         .scrolling-banner { background: #000; color: var(--gold); padding: 12px 0; font-weight: bold; width: 100%; border-bottom: 3px solid var(--accent); position: fixed; top: 0; text-align:center; }
         .slogan-box { color: white; text-align: center; margin-bottom: 25px; padding: 0 20px; margin-top: 60px; }
-        .slogan-box h1 { font-family: 'Montserrat'; font-size: 26px; color: var(--gold); margin: 0; }
-        .login-card { display: flex; width: 1050px; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 40px 100px rgba(0,0,0,0.7); }
+        .login-card { display: flex; width: 1050px; background: white; border-radius: 20px; overflow: hidden; }
         .instruction-side { flex: 1.3; padding: 30px; background: #f8fafc; border-right: 1px solid #e2e8f0; overflow-y: auto; max-height: 75vh; }
-        .instruction-side h2 { color: var(--primary); border-bottom: 3px solid var(--accent); display: inline-block; margin-bottom: 15px; }
         .step-box { background: #fff; padding: 12px; border-radius: 8px; margin-bottom: 10px; border-left: 5px solid var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .step-box b { color: var(--accent); display: block; margin-bottom: 3px; font-size: 15px; }
-        .step-box p { font-size: 13.5px; margin: 0; color: #444; line-height: 1.5; }
-        .auth-side { flex: 0.7; padding: 40px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
 
         /* --- Dashboard --- */
         #dashboard { display: none; }
         .main-layout { display: grid; grid-template-columns: 370px 1fr; min-height: 100vh; }
-        .sidebar { background: white; padding: 25px; border-right: 1px solid #e2e8f0; height: 100vh; overflow-y: auto; position: sticky; top: 0; }
+        .sidebar { background: white; padding: 25px; border-right: 1px solid #e2e8f0; height: 100vh; overflow-y: auto; position: sticky; top: 0; box-sizing: border-box; }
         label { display: block; font-size: 13px; font-weight: bold; color: #64748b; margin-top: 10px; }
         input, textarea, select { width: 100%; padding: 10px; border: 1.2px solid #cbd5e1; border-radius: 8px; margin-bottom: 5px; box-sizing: border-box; }
-        .btn { width: 100%; padding: 14px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px; }
         .btn-gen { background: var(--accent); color: white; }
-        .btn-print { background: var(--primary); color: white; margin-top: 10px; }
+        .btn-pdf { background: #000; color: white; }
+        .btn-print { background: var(--primary); color: white; }
+        .btn-clear { background: #64748b; color: white; }
 
-        /* --- Card Layout --- */
+        /* --- Card Layout Fixes --- */
         .page { background: white; width: 210mm; min-height: 296mm; display: flex; flex-direction: column; align-items: center; margin: 0 auto; padding: 5mm 0; box-sizing: border-box; }
         .card-unit { width: 190mm; margin-bottom: 5mm; page-break-inside: avoid; display: flex; flex-direction: column; align-items: center; }
         .card-frame { width: 190mm; height: 128mm; border: 8px double var(--primary); padding: 15px; position: relative; background: #fff; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; overflow: hidden; }
-        
         .watermark-img { position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%); width: 55%; opacity: 0.12; pointer-events: none; z-index: 0; }
         
-        .card-header { height: 85px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #000; z-index: 1; position: relative; }
-        .logo-container { width: 75px; height: 75px; display: flex; align-items: center; justify-content: center; }
-        .logo-box { max-width: 100%; max-height: 100%; object-fit: contain; }
-        .school-title-area { flex: 1; text-align: center; }
-        .school-title-area h2 { margin: 0; color: var(--accent); font-size: 22px; font-weight: 800; line-height: 1.1; }
-        .school-title-area small { display: block; font-weight: bold; color: #000; margin-bottom: 2px; }
+        .card-header { height: 90px; display: grid; grid-template-columns: 80px 1fr 80px; align-items: center; border-bottom: 2px solid #000; z-index: 1; }
+        .logo-container { width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .logo-box { max-width: 100%; max-height: 100%; object-fit: contain; } /* लोगो साइज फिक्स */
+        
+        .school-title-area { text-align: center; }
+        .school-title-area h2 { margin: 0; color: var(--accent); font-size: 21px; font-weight: 800; line-height: 1.1; }
 
         .card-body { flex: 1; text-align: center; z-index: 1; display: flex; flex-direction: column; justify-content: center; padding: 5px; }
         .invitation-heading { font-size: 24px; text-decoration: underline; font-weight: 800; margin-bottom: 8px; color: #000; }
         .msg-text { font-size: 17px; line-height: 1.5; text-align: justify; color: #222; margin-bottom: 12px; }
-        
         .info-strip { background: #f1f5f9; padding: 10px; border: 2px solid var(--primary); display: flex; justify-content: space-around; font-weight: bold; font-size: 15px; }
+        
         .card-footer { border-top: 1px solid #000; padding-top: 5px; z-index: 1; }
         .footer-line { display: flex; justify-content: space-between; background: #000; color: white; padding: 6px 12px; border-radius: 5px; font-size: 13px; }
-        
         .card-actions { display: flex; gap: 10px; justify-content: center; margin-top: 5px; margin-bottom: 15px; }
-        .btn-wa { background: #25d366; color: white; border: none; padding: 8px 18px; border-radius: 5px; cursor: pointer; font-size: 12px; font-weight: bold; }
-        .btn-dl { background: #1e3a8a; color: white; border: none; padding: 8px 18px; border-radius: 5px; cursor: pointer; font-size: 12px; font-weight: bold; }
 
         @media print { .no-print, #login-screen, .card-actions { display: none !important; } }
     </style>
 </head>
-<body oncontextmenu="return false;">
+<body>
 
 <div id="login-screen">
     <div class="scrolling-banner">
         <marquee behavior="scroll" direction="left" scrollamount="11">🚀 Developed By: AMIT MUROLIA (BCI) | राजकीय उच्च माध्यमिक विद्यालय, नारी (चिड़ावा) ✨</marquee>
     </div>
     <div class="slogan-box">
-        <h1>"उठो, जागो और तब तक मत रुको जब तक लक्ष्य प्राप्त न हो जाए"</h1>
-        <p>— स्वामी विवेकानंद</p>
+        <h1 style="color:var(--gold)">"उठो, जागो और तब तक मत रुको जब तक लक्ष्य प्राप्त न हो जाए"</h1>
+        <p style="color:white; font-style:italic;">— स्वामी विवेकानंद</p>
     </div>
     <div class="login-card">
         <div class="instruction-side">
-            <h2>✨ स्मार्ट निमंत्रण पोर्टल - फीचर्स</h2>
-            <div class="step-box"><b>📊 एक्सेल बल्क मैनेजमेंट:</b><p>Excel से डेटा कॉपी-पेस्ट करें। यहाँ मोबाइल नंबर डालना पूरी तरह से <b>वैकल्पिक (Optional)</b> है।</p></div>
-            <div class="step-box"><b>📱 व्हाट्सएप ऑटो-सिंक:</b><p>'WhatsApp' बटन दबाते ही कार्ड की सारी जानकारी (स्कूल, छात्र, तारीख, स्थान) ऑटोमैटिक मैसेज में टाइप हो जाएगी।</p></div>
-            <div class="step-box"><b>🖼️ ट्रिपल लोगो एवं वॉटरमार्क:</b><p>दाएं और बाएं दो अलग लोगो लगायें और कार्ड के पीछे वॉटरमार्क सेट करें।</p></div>
-            <div class="step-box"><b>💾 डिजिटल फोटो सेव:</b><p>'Save Photo' विकल्प से कार्ड को इमेज (.png) के रूप में सुरक्षित रखें।</p></div>
-            <div class="step-box"><b>🖨️ परफेक्ट प्रिंटिंग:</b><p>एक A4 पेज पर ठीक 2 कार्ड सेट हैं। प्रिंटिंग के समय 'Margins: None' रखें।</p></div>
+            <h2 style="color:var(--primary)">📖 मोड उपयोग मार्गदर्शिका</h2>
+            <div class="step-box"><b>1. 📊 एक्सेल बल्क मोड</b><p>Excel से क्लास, नाम, पिता, मोबाइल पेस्ट करें। मोबाइल नंबर <b>Optional</b> है।</p></div>
+            <div class="step-box"><b>2. ✏️ मैन्युअल छात्र</b><p>एक छात्र का कार्ड बनाने के लिए। इसमें क्लास, नाम और पिता भरें।</p></div>
+            <div class="step-box"><b>3. 👤 अतिथि मोड</b><p>अतिथियों के लिए कार्ड। इसमें कक्षा और पिता का नाम स्वतः हट जाएगा।</p></div>
+            <div class="step-box"><b>💾 PDF एवं फोटो:</b><p>'Save as PDF' से पूरी फाइल और 'Save Photo' से सिंगल कार्ड सेव करें।</p></div>
         </div>
         <div class="auth-side">
             <div style="font-size: 50px;">🏛️</div>
             <h3 style="color:var(--primary)">एडमिन लॉगिन</h3>
             <input type="password" id="passInp" placeholder="Nari123" style="text-align:center; font-size:22px; width:80%; border:2px solid #ddd; padding:10px; border-radius:10px;">
-            <button class="btn btn-gen" style="width:85%; margin-top:15px;" onclick="login()">डैशबोर्ड में प्रवेश करें</button>
-            <p style="font-size:12px; color:gray; margin-top:20px; font-weight:bold;">संपर्क: 9782336436 | Amit Murolia</p>
+            <button class="btn btn-gen" style="width:85%;" onclick="login()">डैशबोर्ड खोलें</button>
         </div>
     </div>
 </div>
@@ -96,30 +87,36 @@
 <div id="dashboard">
     <div class="main-layout">
         <div class="sidebar no-print">
-            <h3 style="color:var(--primary); border-bottom:1px solid #eee;">⚙️ कार्ड सेटिंग्स</h3>
-            <label>मोड चुनें</label>
+            <h3 style="color:var(--primary); border-bottom:1px solid #eee;">⚙️ सेटिंग्स</h3>
+            <label>कार्य मोड चुनें</label>
             <select id="mode" onchange="toggleMode()">
                 <option value="bulk">📊 एक्सेल बल्क डेटा</option>
                 <option value="manual">✏️ मैन्युअल छात्र</option>
                 <option value="guest">👤 अतिथि (Guest)</option>
             </select>
+            
             <div id="bulkSec">
-                <textarea id="rawInput" rows="3" placeholder="Class [Tab] Name [Tab] Father [Tab] Mobile" oninput="updateFilters()"></textarea>
+                <textarea id="rawInput" rows="3" placeholder="कक्षा [Tab] छात्र [Tab] पिता [Tab] मोबाइल" oninput="saveData(); updateFilters();"></textarea>
                 <select id="classFilter"><option value="all">सभी क्लास</option></select>
             </div>
-            <div id="manualSec" style="display:none;"><input type="text" id="mC" placeholder="क्लास"><input type="text" id="mN" placeholder="नाम"><input type="text" id="mF" placeholder="पिता का नाम"><input type="text" id="mM" placeholder="मोबाइल"></div>
-            <div id="guestSec" style="display:none;"><input type="text" id="gN" placeholder="अतिथि का नाम"><input type="text" id="gM" placeholder="मोबाइल"></div>
-            <label>स्कूल का नाम</label><input type="text" id="sName" value="राजकीय उच्च माध्यमिक विद्यालय, नारी (चिड़ावा)">
-            <label>कार्ड हेडिंग</label><input type="text" id="hText" value="निमंत्रण: निपुण मेला एवं मेगा PTM">
-            <label>मुख्य संदेश</label><textarea id="mText" rows="3">सादर नमस्कार। विद्यालय में विद्यार्थियों के शैक्षणिक कौशल प्रदर्शन हेतु कार्यक्रम आयोजित है। आपकी गरिमामयी उपस्थिति अपेक्षित है।</textarea>
-            <label>तारीख एवं समय</label><input type="text" id="eText" value="📅 23 जनवरी 2026 | ⏰ 11:00 AM">
-            <label>स्थान</label><input type="text" id="vPlace" value="📍 स्थान: विद्यालय सभा भवन">
-            <label>विनीत</label><input type="text" id="vText" value="प्रधानाचार्य एवं समस्त स्टाफ">
-            <label>लोगो (बायां / दायां)</label>
+            <div id="manualSec" style="display:none;"><input type="text" id="mC" placeholder="कक्षा" oninput="saveData()"><input type="text" id="mN" placeholder="छात्र" oninput="saveData()"><input type="text" id="mF" placeholder="पिता" oninput="saveData()"><input type="text" id="mM" placeholder="मोबाइल" oninput="saveData()"></div>
+            <div id="guestSec" style="display:none;"><input type="text" id="gN" placeholder="अतिथि का नाम" oninput="saveData()"><input type="text" id="gM" placeholder="मोबाइल" oninput="saveData()"></div>
+            
+            <label>स्कूल का नाम</label><input type="text" id="sName" value="राजकीय उच्च माध्यमिक विद्यालय, नारी (चिड़ावा)" oninput="saveData()">
+            <label>कार्ड हेडिंग</label><input type="text" id="hText" value="निमंत्रण: निपुण मेला एवं मेगा PTM" oninput="saveData()">
+            <label>मैसेज</label><textarea id="mText" rows="3" oninput="saveData()">सादर नमस्कार। विद्यालय में विद्यार्थियों के शैक्षणिक कौशल प्रदर्शन हेतु कार्यक्रम आयोजित है। आपकी गरिमामयी उपस्थिति अपेक्षित है।</textarea>
+            <label>तारीख एवं समय</label><input type="text" id="eText" value="📅 23 जनवरी 2026 | ⏰ 11:00 AM" oninput="saveData()">
+            <label>स्थान</label><input type="text" id="vPlace" value="📍 स्थान: विद्यालय सभा भवन" oninput="saveData()">
+            <label>विनीत</label><input type="text" id="vText" value="प्रधानाचार्य एवं समस्त स्टाफ" oninput="saveData()">
+            
+            <label>लोगो (L/R) & वाटरमार्क</label>
             <div style="display:flex; gap:5px;"><input type="file" id="lImg" title="Left"><input type="file" id="rImg" title="Right"></div>
-            <label>बैकग्राउंड वॉटरमार्क</label><input type="file" id="bgImg">
+            <input type="file" id="bgImg">
+            
             <button class="btn btn-gen" onclick="render()">✅ कार्ड तैयार करें</button>
+            <button class="btn btn-pdf" onclick="saveAsPDF()">📄 Save as PDF</button>
             <button class="btn btn-print" onclick="window.print()">🖨️ प्रिंट निकालें</button>
+            <button class="btn btn-clear" onclick="clearAllData()">🗑️ Clear All Data</button>
         </div>
         <div class="preview-pane" id="outArea"></div>
     </div>
@@ -127,7 +124,39 @@
 
 <script>
     let leftLogo = "", rightLogo = "", watermark = "";
-    function login() { if(document.getElementById('passInp').value === "Nari123") { document.getElementById('login-screen').style.display='none'; document.getElementById('dashboard').style.display='block'; } else alert("पासवर्ड गलत है!"); }
+
+    function saveData() {
+        const data = {
+            rawInput: document.getElementById('rawInput').value,
+            sName: document.getElementById('sName').value,
+            hText: document.getElementById('hText').value,
+            mText: document.getElementById('mText').value,
+            eText: document.getElementById('eText').value,
+            vPlace: document.getElementById('vPlace').value,
+            vText: document.getElementById('vText').value,
+            mode: document.getElementById('mode').value
+        };
+        localStorage.setItem('amitPortalData', JSON.stringify(data));
+    }
+
+    function loadData() {
+        const d = JSON.parse(localStorage.getItem('amitPortalData'));
+        if(d) {
+            document.getElementById('rawInput').value = d.rawInput || "";
+            document.getElementById('sName').value = d.sName || "";
+            document.getElementById('hText').value = d.hText || "";
+            document.getElementById('mText').value = d.mText || "";
+            document.getElementById('eText').value = d.eText || "📅 23 जनवरी 2026 | ⏰ 11:00 AM";
+            document.getElementById('vPlace').value = d.vPlace || "";
+            document.getElementById('vText').value = d.vText || "";
+            document.getElementById('mode').value = d.mode || "bulk";
+            toggleMode(); updateFilters();
+        }
+    }
+    window.onload = loadData;
+
+    function clearAllData() { if(confirm("सारा डेटा हटाना चाहते हैं?")) { localStorage.removeItem('amitPortalData'); location.reload(); } }
+    function login() { if(document.getElementById('passInp').value === "Nari123") { document.getElementById('login-screen').style.display='none'; document.getElementById('dashboard').style.display='block'; } else alert("गलत पासवर्ड!"); }
     
     document.getElementById('lImg').onchange = (e) => { const r = new FileReader(); r.onload=()=>leftLogo=r.result; r.readAsDataURL(e.target.files[0]); };
     document.getElementById('rImg').onchange = (e) => { const r = new FileReader(); r.onload=()=>rightLogo=r.result; r.readAsDataURL(e.target.files[0]); };
@@ -149,13 +178,25 @@
         Array.from(classes).sort().forEach(c => { const opt = document.createElement('option'); opt.value = c; opt.innerText = "कक्षा: " + c; filter.appendChild(opt); });
     }
 
+    async function saveAsPDF() {
+        const pages = document.querySelectorAll('.page');
+        if(pages.length === 0) return alert("पहले कार्ड तैयार करें!");
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        for (let i = 0; i < pages.length; i++) {
+            const canvas = await html2canvas(pages[i], { scale: 2 });
+            const imgData = canvas.toDataURL('image/jpeg', 0.8);
+            if (i > 0) pdf.addPage();
+            pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
+        }
+        pdf.save('Invitations.pdf');
+    }
+
     function saveCard(btn) {
-        const cardFrame = btn.parentElement.previousElementSibling;
-        html2canvas(cardFrame, { scale: 3 }).then(canvas => {
+        const frame = btn.parentElement.previousElementSibling;
+        html2canvas(frame, { scale: 3 }).then(canvas => {
             const link = document.createElement('a');
-            link.download = 'Invitation.png';
-            link.href = canvas.toDataURL();
-            link.click();
+            link.download = 'Invitation.png'; link.href = canvas.toDataURL(); link.click();
         });
     }
 
@@ -193,11 +234,7 @@
                     ${watermark ? `<img src="${watermark}" class="watermark-img">` : ''}
                     <div class="card-header">
                         <div class="logo-container">${leftLogo ? `<img src="${leftLogo}" class="logo-box">` : ''}</div>
-                        <div class="school-title-area">
-                            <small>॥ राजस्थान शिक्षा विभाग ॥</small>
-                            <h2>${sName}</h2>
-                            <div style="border-bottom:2px solid #000; width:80%; margin:4px auto;"></div>
-                        </div>
+                        <div class="school-title-area"><small>॥ राजस्थान शिक्षा विभाग ॥</small><h2>${sName}</h2><div style="border-bottom:2px solid #000; width:80%; margin:4px auto;"></div></div>
                         <div class="logo-container">${rightLogo ? `<img src="${rightLogo}" class="logo-box">` : ''}</div>
                     </div>
                     <div class="card-body">
