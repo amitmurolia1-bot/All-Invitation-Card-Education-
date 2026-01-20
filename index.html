@@ -36,7 +36,7 @@
         .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px; }
         .btn-gen { background: var(--gold); color: black; }
 
-        /* --- Card Unit Layout --- */
+        /* --- Card Layout --- */
         .page { background: #f1f5f9; width: 210mm; min-height: 296mm; margin: 0 auto; padding: 8mm 0; display: flex; flex-direction: column; align-items: center; box-sizing: border-box; }
         .card-unit { page-break-inside: avoid; display: flex; flex-direction: column; align-items: center; width: 100%; margin-bottom: 5mm; }
         .card-frame { border: 8px double var(--primary); padding: 10px; position: relative; background: #fff; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; overflow: hidden; width: 190mm; }
@@ -70,7 +70,7 @@
         <marquee scrollamount="11">🚀 DEVELOPED BY: AMIT MUROLIA (BCI) | GOVT SR SEC SCHOOL NARI, CHIRAWA ✨</marquee>
     </div>
     <div class="slogan-box">
-        <h1 style="color:var(--gold)">"उठो, जागो और तब तक मत रुको तक लक्ष्य प्राप्त न हो जाए"</h1>
+        <h1 style="color:var(--gold)">"उठो, जागो और तब तक मत रुको जब तक लक्ष्य प्राप्त न हो जाए"</h1>
         <p style="color:white; font-size:20px;">— स्वामी विवेकानंद</p>
     </div>
     <div class="login-card">
@@ -205,7 +205,7 @@
     document.getElementById('bgImg').onchange = (e) => { const r = new FileReader(); r.onload=()=>watermark=r.result; r.readAsDataURL(e.target.files[0]); };
     function updateFilters() { const input = document.getElementById('rawInput').value.trim(); const filter = document.getElementById('classFilter'); const classes = new Set(); input.split('\n').forEach(line => { const d = line.split(/\t/); if(d[0]) classes.add(d[0].trim()); }); filter.innerHTML = '<option value="all">सभी क्लास</option>'; Array.from(classes).sort().forEach(c => { const opt = document.createElement('option'); opt.value = c; opt.innerText = "Class: " + c; filter.appendChild(opt); }); }
 
-    function sendWhatsApp(mob, name, father, cls) {
+    function sendWhatsApp(mob, name, father, cls, type) {
         const sName = document.getElementById('sName').value;
         const hText = document.getElementById('hText').value;
         const mText = document.getElementById('mText').value;
@@ -213,13 +213,10 @@
         const vn = document.getElementById('vn').value;
         const vt = document.getElementById('vt').value;
 
-        let personalInfo = father ? `\n\n*Class :-* ${cls}\n*Name :-* ${name}\n*Father's Name :-* Mr. ${father}` : `\n\n*Guest :-* ${name}`;
+        let personalInfo = (type === 'guest') ? `\n\n*Guest :-* ${name}` : `\n\n*Class :-* ${cls}\n*Name :-* ${name}\n*Father's Name :-* Mr. ${father}`;
         
         const message = `*${sName}*\n\n*${hText}*\n\nआदरणीय अभिभावक, \n${mText}${personalInfo}\n\n${dt}\n${vn}\n\n*विनीत:* ${vt}`;
-        
-        // Mobile number logic: if empty, send empty string to WA to open chat selection
         const targetNumber = (mob && mob.trim() !== "") ? "91" + mob.trim() : "";
-        
         window.open(`https://wa.me/${targetNumber}?text=${encodeURIComponent(message)}`, '_blank');
     }
 
@@ -257,7 +254,7 @@
                     <div class="footer-line"><span>${document.getElementById('dt').value}</span><span>${document.getElementById('vn').value}</span><span>विनीत: ${document.getElementById('vt').value}</span></div>
                 </div>
                 <div class="card-actions no-print" style="display:flex; gap:10px; margin-top:5px; margin-bottom:15px;">
-                    <button class="btn" style="background:#25D366; color:white; padding:5px 15px; margin:0;" onclick="sendWhatsApp('${d.mob}', '${d.c2}', '${d.c3}', '${d.c1}')">WhatsApp Send</button>
+                    <button class="btn" style="background:#25D366; color:white; padding:5px 15px; margin:0;" onclick="sendWhatsApp('${d.mob}', '${d.c2}', '${d.c3}', '${d.c1}', '${d.type}')">WhatsApp Send</button>
                     <button class="btn" style="background:#444; color:white; padding:5px 15px; margin:0;" onclick="saveImg(this)">Save Image</button>
                 </div>
             </div>`;
