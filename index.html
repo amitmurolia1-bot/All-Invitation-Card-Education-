@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="hi">
 <head>
@@ -7,116 +8,160 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Hind:wght@400;500;600&display=swap');
-        :root { --primary: #1e3a8a; --accent: #b91c1c; --gold: #facc15; }
-        body { font-family: 'Hind', sans-serif; background: #f1f5f9; margin: 0; user-select: none; }
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Hind:wght@400;500;600;700&display=swap');
+        :root { --primary: #1e3a8a; --sidebar-bg: #1e3a8a; --accent: #b91c1c; --gold: #facc15; }
+        body { font-family: 'Hind', sans-serif; background: #e2e8f0; margin: 0; user-select: none; }
+
+        .scrolling-banner { background: #000; color: var(--gold); padding: 10px 0; font-weight: bold; width: 100%; border-bottom: 3px solid var(--accent); position: fixed; top: 0; text-align:center; z-index: 10001; text-transform: uppercase; }
 
         /* --- Login Screen --- */
-        #login-screen { position: fixed; inset: 0; background: radial-gradient(circle at center, #112240 0%, #0a192f 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10000; }
-        .scrolling-banner { background: #000; color: var(--gold); padding: 12px 0; font-weight: bold; width: 100%; border-bottom: 3px solid var(--accent); position: fixed; top: 0; text-align:center; }
-        .slogan-box { color: white; text-align: center; margin-bottom: 25px; padding: 0 20px; margin-top: 60px; }
-        .login-card { display: flex; width: 1050px; background: white; border-radius: 20px; overflow: hidden; }
-        .instruction-side { flex: 1.3; padding: 30px; background: #f8fafc; border-right: 1px solid #e2e8f0; overflow-y: auto; max-height: 75vh; }
-        .step-box { background: #fff; padding: 12px; border-radius: 8px; margin-bottom: 10px; border-left: 5px solid var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .step-box b { color: var(--accent); display: block; margin-bottom: 3px; font-size: 15px; }
+        #login-screen { position: fixed; inset: 0; background: radial-gradient(circle at center, #1e3a8a 0%, #0a192f 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10000; }
+        .slogan-box { color: white; text-align: center; margin-bottom: 20px; margin-top: 60px; }
+        .login-card { display: flex; width: 1100px; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
+        
+        .instruction-side { flex: 1.6; padding: 35px; background: #f0f7ff; border-right: 1px solid #dbeafe; overflow-y: auto; max-height: 80vh; }
+        .instruction-side h2 { color: var(--primary); margin-top: 0; border-bottom: 3px solid var(--gold); display: inline-block; padding-bottom: 5px; }
+        
+        .step-box { background: white; padding: 15px; border-radius: 10px; margin-bottom: 12px; border-left: 6px solid var(--primary); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .step-box b { color: var(--accent); display: block; margin-bottom: 5px; font-size: 16px; border-bottom: 1px dashed #ddd; padding-bottom: 3px; }
+        .step-box p { margin: 0; font-size: 14px; line-height: 1.5; color: #333; }
 
-        /* --- Dashboard --- */
+        /* --- Sidebar UI --- */
         #dashboard { display: none; }
-        .main-layout { display: grid; grid-template-columns: 370px 1fr; min-height: 100vh; }
-        .sidebar { background: white; padding: 25px; border-right: 1px solid #e2e8f0; height: 100vh; overflow-y: auto; position: sticky; top: 0; box-sizing: border-box; }
-        label { display: block; font-size: 13px; font-weight: bold; color: #64748b; margin-top: 10px; }
-        input, textarea, select { width: 100%; padding: 10px; border: 1.2px solid #cbd5e1; border-radius: 8px; margin-bottom: 5px; box-sizing: border-box; }
-        .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; color: white; margin-top: 10px; }
-        .btn-gen { background: var(--accent); color: white; }
-        .btn-pdf { background: #000; color: white; }
-        .btn-print { background: var(--primary); color: white; }
-        .btn-clear { background: #64748b; color: white; }
-
-        /* --- Card Layout --- */
-        .page { background: white; width: 210mm; min-height: 296mm; display: flex; flex-direction: column; align-items: center; margin: 0 auto; padding: 5mm 0; box-sizing: border-box; }
-        .card-unit { width: 190mm; margin-bottom: 5mm; page-break-inside: avoid; display: flex; flex-direction: column; align-items: center; }
-        .card-frame { width: 190mm; height: 128mm; border: 8px double var(--primary); padding: 15px; position: relative; background: #fff; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; overflow: hidden; }
-        .watermark-img { position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%); width: 55%; opacity: 0.12; pointer-events: none; z-index: 0; }
+        .main-layout { display: grid; grid-template-columns: 380px 1fr; min-height: 100vh; }
+        .sidebar { background: var(--sidebar-bg); color: white; padding: 25px; height: 100vh; overflow-y: auto; position: sticky; top: 0; border-right: 5px solid var(--gold); box-sizing: border-box; }
+        .sidebar h3 { color: var(--gold); text-align: center; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 10px; margin-top: 40px; }
         
-        .card-header { height: 90px; display: grid; grid-template-columns: 80px 1fr 80px; align-items: center; border-bottom: 2px solid #000; z-index: 1; }
-        .logo-container { width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .logo-box { max-width: 100%; max-height: 100%; object-fit: contain; }
-        
-        .school-title-area { text-align: center; }
-        .school-title-area h2 { margin: 0; color: var(--accent); font-size: 21px; font-weight: 800; line-height: 1.1; }
+        label { display: block; font-size: 11px; font-weight: bold; color: #cbd5e1; margin-top: 15px; text-transform: uppercase; }
+        input, textarea, select { width: 100%; padding: 10px; margin-top: 5px; border: none; border-radius: 8px; background: #fff; color: #000; font-weight: 600; box-sizing: border-box; }
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .btn-gen { background: var(--gold); color: black; }
 
-        .card-body { flex: 1; text-align: center; z-index: 1; display: flex; flex-direction: column; justify-content: center; padding: 5px; }
-        .invitation-heading { font-size: 24px; text-decoration: underline; font-weight: 800; margin-bottom: 8px; color: #000; }
-        .msg-text { font-size: 17px; line-height: 1.5; text-align: justify; color: #222; margin-bottom: 12px; }
-        .info-strip { background: #f1f5f9; padding: 10px; border: 2px solid var(--primary); display: flex; justify-content: space-around; font-weight: bold; font-size: 15px; }
+        /* --- Card Unit Layout --- */
+        .page { background: #f1f5f9; width: 210mm; min-height: 296mm; margin: 0 auto; padding: 8mm 0; display: flex; flex-direction: column; align-items: center; box-sizing: border-box; }
+        .card-unit { page-break-inside: avoid; display: flex; flex-direction: column; align-items: center; width: 100%; margin-bottom: 5mm; }
+        .card-frame { border: 8px double var(--primary); padding: 10px; position: relative; background: #fff; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; overflow: hidden; width: 190mm; }
         
-        .card-footer { border-top: 1px solid #000; padding-top: 5px; z-index: 1; }
-        .footer-line { display: flex; justify-content: space-between; background: #000; color: white; padding: 6px 12px; border-radius: 5px; font-size: 13px; }
-        .card-actions { display: flex; gap: 10px; justify-content: center; margin-top: 5px; margin-bottom: 15px; }
+        .size-2 { height: 135mm; }
+        .size-3 { height: 90mm; }
+        .size-4 { height: 66mm; border-width: 5px; padding: 6px; }
 
-        @media print { .no-print, #login-screen, .card-actions { display: none !important; } }
+        .card-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #000; padding-bottom: 4px; height: 60px; }
+        .logo-box { height: 55px; width: 60px; object-fit: contain; }
+        .logo-box[src=""], .logo-box:not([src]) { display: none; }
+        .school-info { text-align: center; flex: 1; }
+        .school-info h2 { margin: 0; color: var(--accent); font-weight: 800; font-size: 20px; line-height: 1; }
+        
+        .card-body { flex: 1; text-align: center; display: flex; flex-direction: column; justify-content: center; z-index: 1; }
+        .msg-text { font-size: 15px; line-height: 1.35; margin: 5px 15px; text-align: justify; color: #222; }
+        .size-4 .msg-text { font-size: 12px; line-height: 1.2; margin: 2px 10px; }
+
+        .info-strip { background: #f1f5f9; padding: 6px; border: 2.5px solid var(--primary); display: flex; justify-content: space-around; font-weight: bold; font-size: 14px; color: #000; margin: 5px 0; }
+        .size-4 .info-strip { font-size: 11px; padding: 3px; }
+        
+        .footer-line { background: #000; color: #fff; padding: 5px 12px; display: flex; justify-content: space-between; border-radius: 4px; font-size: 11px; margin-top: auto; }
+
+        @media print { .no-print, #login-screen, .card-actions { display: none !important; } .page { background: white; padding: 0; } }
     </style>
 </head>
 <body>
 
 <div id="login-screen">
     <div class="scrolling-banner">
-        <marquee behavior="scroll" direction="left" scrollamount="11">🚀 Developed By: AMIT MUROLIA (BCI) | राजकीय उच्च माध्यमिक विद्यालय, नारी (चिड़ावा) ✨</marquee>
+        <marquee scrollamount="11">🚀 DEVELOPED BY: AMIT MUROLIA (BCI) | GOVT SR SEC SCHOOL NARI, CHIRAWA ✨</marquee>
     </div>
     <div class="slogan-box">
         <h1 style="color:var(--gold)">"उठो, जागो और तब तक मत रुको जब तक लक्ष्य प्राप्त न हो जाए"</h1>
-        <p style="color:white; font-style:italic;">— स्वामी विवेकानंद</p>
+        <p style="color:white; font-size:20px;">— स्वामी विवेकानंद</p>
     </div>
     <div class="login-card">
         <div class="instruction-side">
-            <h2 style="color:var(--primary)">📖 मोड उपयोग मार्गदर्शिका</h2>
-            <div class="step-box"><b>1. 📊 एक्सेल बल्क मोड</b><p>Excel से क्लास, नाम, पिता, मोबाइल पेस्ट करें।</p></div>
-            <div class="step-box"><b>2. ✏️ मैन्युअल छात्र</b><p>एक छात्र का कार्ड बनाने के लिए। इसमें क्लास, नाम और पिता भरें।</p></div>
-            <div class="step-box"><b>3. 👤 अतिथि मोड</b><p>अतिथियों के लिए कार्ड। इसमें कक्षा और पिता का नाम स्वतः हट जाएगा।</p></div>
-            <div class="step-box"><b>💾 PDF एवं फोटो:</b><p>'Save as PDF' से पूरी फाइल और 'Save Photo' से सिंगल कार्ड सेव करें।</p></div>
+            <h2>📖 पोर्टल उपयोग के निर्देश (Features Guide)</h2>
+            
+            <div class="step-box">
+                <b>📊 बल्क एक्सेल मोड (Bulk Mode)</b>
+                <p>Excel शीट से क्लास, नाम, पिता और मोबाइल नंबर के कॉलम कॉपी करके एक साथ पेस्ट करें। यह सैकड़ों कार्ड मिनटों में बनाने के लिए सबसे बेस्ट है।</p>
+            </div>
+            
+            <div class="step-box">
+                <b>✏️ मैन्युअल छात्र मोड (Manual Mode)</b>
+                <p>यदि आपको किसी एक छात्र का कार्ड अलग से बनाना है, तो इस मोड में उसकी जानकारी भरकर तुरंत कार्ड जनरेट कर सकते हैं।</p>
+            </div>
+
+            <div class="step-box">
+                <b>👤 अतिथि मोड (Guest Mode)</b>
+                <p>विशेष अतिथियों या अभिभावकों के लिए बिना क्लास और पिता के नाम वाला कस्टमाइज़्ड निमंत्रण पत्र तैयार करने हेतु इसका उपयोग करें।</p>
+            </div>
+
+            <div class="step-box">
+                <b>📱 स्मार्ट फीचर्स (WhatsApp & Photo)</b>
+                <p>तैयार कार्ड को 'WhatsApp Send' बटन से सीधे अभिभावक को भेजें या 'Save Image' बटन से अपनी गैलरी में सुरक्षित करें।</p>
+            </div>
+
+            <div class="step-box">
+                <b>🖨️ प्रिंटिंग सेटिंग्स (Best Print Settings)</b>
+                <p>A4 पेज पर 2, 3 या 4 कार्ड सेट करें। प्रिंट (Ctrl+P) करते समय <b>'Background Graphics'</b> को हमेशा <b>ON</b> रखें और <b>'Margins'</b> को <b>None</b> पर सेट करें।</p>
+            </div>
         </div>
-        <div class="auth-side">
+        <div class="auth-side" style="flex:0.6; padding:40px; text-align:center; background:#fff; align-self:center;">
             <div style="font-size: 50px;">🏛️</div>
-            <h3 style="color:var(--primary)">एडमिन लॉगिन</h3>
-            <input type="password" id="passInp" placeholder="Nari123" style="text-align:center; font-size:22px; width:80%; border:2px solid #ddd; padding:10px; border-radius:10px;">
-            <button class="btn btn-gen" style="width:85%;" onclick="login()">डैशबोर्ड खोलें</button>
+            <h3 style="color:#000;">एडमिन लॉगिन</h3>
+            <input type="password" id="passInp" placeholder="Enter Nari123">
+            <button class="btn btn-gen" style="width:100%; margin-top:20px;" onclick="login()">Dashboard खोलें</button>
         </div>
     </div>
 </div>
 
 <div id="dashboard">
+    <div class="scrolling-banner no-print">
+        <marquee scrollamount="11">🚀 DEVELOPED BY: AMIT MUROLIA (BCI) | GOVT SR SEC SCHOOL NARI, CHIRAWA ✨</marquee>
+    </div>
     <div class="main-layout">
         <div class="sidebar no-print">
-            <h3 style="color:var(--primary); border-bottom:1px solid #eee;">⚙️ सेटिंग्स</h3>
+            <h3>⚙️ स्मार्ट कंट्रोल</h3>
+            
             <label>कार्य मोड चुनें</label>
             <select id="mode" onchange="toggleMode()">
-                <option value="bulk">📊 एक्सेल बल्क डेटा</option>
-                <option value="manual">✏️ मैन्युअल छात्र</option>
+                <option value="bulk">📊 एक्सेल बल्क (Bulk)</option>
+                <option value="manual">✏️ मैन्युअल (Manual)</option>
                 <option value="guest">👤 अतिथि (Guest)</option>
             </select>
-            
+
             <div id="bulkSec">
-                <textarea id="rawInput" rows="3" placeholder="कक्षा [Tab] छात्र [Tab] पिता [Tab] मोबाइल" oninput="saveData(); updateFilters();"></textarea>
-                <select id="classFilter"><option value="all">सभी क्लास</option></select>
+                <label>Excel डेटा यहाँ पेस्ट करें</label>
+                <textarea id="rawInput" rows="3" oninput="saveAllData(); updateFilters();" placeholder="Class [Tab] Name [Tab] Father [Tab] Mobile"></textarea>
+                <select id="classFilter" onchange="render()"><option value="all">सभी क्लास</option></select>
             </div>
-            <div id="manualSec" style="display:none;"><input type="text" id="mC" placeholder="कक्षा" oninput="saveData()"><input type="text" id="mN" placeholder="छात्र" oninput="saveData()"><input type="text" id="mF" placeholder="पिता" oninput="saveData()"><input type="text" id="mM" placeholder="मोबाइल" oninput="saveData()"></div>
-            <div id="guestSec" style="display:none;"><input type="text" id="gN" placeholder="अतिथि का नाम" oninput="saveData()"><input type="text" id="gM" placeholder="मोबाइल" oninput="saveData()"></div>
+
+            <div id="manualSec" style="display:none;">
+                <input type="text" id="mC" placeholder="Class" oninput="saveAllData()"><input type="text" id="mN" placeholder="Name" oninput="saveAllData()"><input type="text" id="mF" placeholder="Father" oninput="saveAllData()"><input type="text" id="mM" placeholder="Mobile" oninput="saveAllData()">
+            </div>
+
+            <div id="guestSec" style="display:none;">
+                <input type="text" id="gName" placeholder="Guest Name" oninput="saveAllData()"><input type="text" id="gMob" placeholder="Mobile" oninput="saveAllData()">
+            </div>
+
+            <label>विभाग का नाम</label><input type="text" id="dept" value="॥ राजस्थान शिक्षा विभाग ॥" oninput="saveAllData()">
+            <label>स्कूल का नाम</label><input type="text" id="sName" value="राजकीय उच्च माध्यमिक विद्यालय, नारी" oninput="saveAllData()">
+            <label>कार्ड हेडिंग</label><input type="text" id="hText" value="निमंत्रण: निपुण मेला एवं मेगा PTM" oninput="saveAllData()">
+            <label>संदेश</label><textarea id="mText" oninput="saveAllData()">सादर नमस्कार। विद्यालय में अध्ययनरत विद्यार्थियों के शैक्षणिक कौशल प्रदर्शन हेतु "निपुण मेला" एवं "मेगा पी.टी.एम." का आयोजन किया जा रहा है। बच्चों के सर्वांगीण विकास हेतु आपकी गरिमामयी उपस्थिति सादर अपेक्षित है।</textarea>
             
-            <label>स्कूल का नाम</label><input type="text" id="sName" value="राजकीय उच्च माध्यमिक विद्यालय, नारी (चिड़ावा)" oninput="saveData()">
-            <label>कार्ड हेडिंग</label><input type="text" id="hText" value="निमंत्रण: निपुण मेला एवं मेगा PTM" oninput="saveData()">
-            <label>मैसेज</label><textarea id="mText" rows="3" oninput="saveData()">सादर नमस्कार। विद्यालय में विद्यार्थियों के शैक्षणिक कौशल प्रदर्शन हेतु कार्यक्रम आयोजित है। आपकी गरिमामयी उपस्थिति अपेक्षित है।</textarea>
-            <label>तारीख एवं समय</label><input type="text" id="eText" value="📅 23 जनवरी 2026 | ⏰ 11:00 AM" oninput="saveData()">
-            <label>स्थान</label><input type="text" id="vPlace" value="📍 स्थान: विद्यालय सभा भवन" oninput="saveData()">
-            <label>विनीत</label><input type="text" id="vText" value="प्रधानाचार्य एवं समस्त स्टाफ" oninput="saveData()">
-            
-            <label>लोगो (L/R) & वाटरमार्क</label>
+            <label>दिनांक / स्थान / विनीत</label>
+            <input type="text" id="dt" value="📅 23 जनवरी 2026 | ⏰ 11:00 AM" oninput="saveAllData()">
+            <input type="text" id="vn" value="📍 विद्यालय सभा भवन" oninput="saveAllData()">
+            <input type="text" id="vt" value="प्रधानाचार्य एवं समस्त स्टाफ" oninput="saveAllData()">
+
+            <label>प्रिंटिंग ग्रिड (A4)</label>
+            <select id="gridMode" onchange="render()"><option value="2">2 कार्ड</option><option value="3">3 कार्ड</option><option value="4">4 कार्ड</option></select>
+
+            <label>लोगो / वाटरमार्क</label>
             <div style="display:flex; gap:5px;"><input type="file" id="lImg" title="Left"><input type="file" id="rImg" title="Right"></div>
             <input type="file" id="bgImg">
-            
+
             <button class="btn btn-gen" onclick="render()">✅ कार्ड तैयार करें</button>
-            <button class="btn btn-pdf" onclick="saveAsPDF()">📄 Save as PDF</button>
-            <button class="btn btn-print" onclick="window.print()">🖨️ प्रिंट निकालें</button>
-            <button class="btn btn-clear" onclick="clearAllData()">🗑️ Clear All Data</button>
+            <button class="btn" style="background:#3b82f6; color:white;" onclick="window.print()">🖨️ Direct Print</button>
+            <button class="btn" style="background:#000; color:white;" onclick="saveAsPDF()">📄 Save as PDF</button>
+            <button class="btn" style="background:#475569; color:white; margin-top:20px;" onclick="localStorage.clear(); location.reload();">🗑️ Clear Data</button>
         </div>
         <div class="preview-pane" id="outArea"></div>
     </div>
@@ -124,148 +169,97 @@
 
 <script>
     let leftLogo = "", rightLogo = "", watermark = "";
-
-    function saveData() {
-        const data = {
-            rawInput: document.getElementById('rawInput').value,
-            sName: document.getElementById('sName').value,
-            hText: document.getElementById('hText').value,
-            mText: document.getElementById('mText').value,
-            eText: document.getElementById('eText').value,
-            vPlace: document.getElementById('vPlace').value,
-            vText: document.getElementById('vText').value,
-            mode: document.getElementById('mode').value
-        };
-        localStorage.setItem('amitPortalData', JSON.stringify(data));
-    }
-
-    function loadData() {
-        const d = JSON.parse(localStorage.getItem('amitPortalData'));
-        if(d) {
-            document.getElementById('rawInput').value = d.rawInput || "";
-            document.getElementById('sName').value = d.sName || "";
-            document.getElementById('hText').value = d.hText || "";
-            document.getElementById('mText').value = d.mText || "";
-            document.getElementById('eText').value = d.eText || "📅 23 जनवरी 2026 | ⏰ 11:00 AM";
-            document.getElementById('vPlace').value = d.vPlace || "";
-            document.getElementById('vText').value = d.vText || "";
-            document.getElementById('mode').value = d.mode || "bulk";
-            toggleMode(); updateFilters();
-        }
-    }
-    window.onload = loadData;
-
-    function clearAllData() { if(confirm("सारा डेटा हटाना चाहते हैं?")) { localStorage.removeItem('amitPortalData'); location.reload(); } }
     function login() { if(document.getElementById('passInp').value === "Nari123") { document.getElementById('login-screen').style.display='none'; document.getElementById('dashboard').style.display='block'; } else alert("गलत पासवर्ड!"); }
     
-    document.getElementById('lImg').onchange = (e) => { const r = new FileReader(); r.onload=()=>leftLogo=r.result; r.readAsDataURL(e.target.files[0]); };
-    document.getElementById('rImg').onchange = (e) => { const r = new FileReader(); r.onload=()=>rightLogo=r.result; r.readAsDataURL(e.target.files[0]); };
-    document.getElementById('bgImg').onchange = (e) => { const r = new FileReader(); r.onload=()=>watermark=r.result; r.readAsDataURL(e.target.files[0]); };
-
-    function toggleMode() {
+    function toggleMode() { 
         let m = document.getElementById('mode').value;
         document.getElementById('bulkSec').style.display = (m==='bulk'?'block':'none');
         document.getElementById('manualSec').style.display = (m==='manual'?'block':'none');
         document.getElementById('guestSec').style.display = (m==='guest'?'block':'none');
     }
 
-    function updateFilters() {
-        const input = document.getElementById('rawInput').value.trim();
-        const filter = document.getElementById('classFilter');
-        const classes = new Set();
-        input.split('\n').forEach(line => { const d = line.split(/\t/); if(d[0]) classes.add(d[0].trim()); });
-        filter.innerHTML = '<option value="all">सभी क्लास</option>';
-        Array.from(classes).sort().forEach(c => { const opt = document.createElement('option'); opt.value = c; opt.innerText = "कक्षा: " + c; filter.appendChild(opt); });
+    function saveAllData() {
+        const d = { raw: document.getElementById('rawInput').value, sName: document.getElementById('sName').value, hText: document.getElementById('hText').value, mText: document.getElementById('mText').value, dept: document.getElementById('dept').value, dt: document.getElementById('dt').value, vn: document.getElementById('vn').value, vt: document.getElementById('vt').value, mC: document.getElementById('mC').value, mN: document.getElementById('mN').value, mF: document.getElementById('mF').value, mM: document.getElementById('mM').value, gN: document.getElementById('gName').value, gM: document.getElementById('gMob').value };
+        localStorage.setItem('amitFinalStore2026', JSON.stringify(d));
     }
 
-    async function saveAsPDF() {
-        const pages = document.querySelectorAll('.page');
-        if(pages.length === 0) return alert("पहले कार्ड तैयार करें!");
-        
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF('p', 'mm', 'a4');
-
-        const actionButtons = document.querySelectorAll('.card-actions');
-        actionButtons.forEach(btn => btn.style.display = 'none');
-
-        for (let i = 0; i < pages.length; i++) {
-            const canvas = await html2canvas(pages[i], { scale: 2 });
-            const imgData = canvas.toDataURL('image/jpeg', 0.8);
-            if (i > 0) pdf.addPage();
-            pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
+    function loadAllData() {
+        const d = JSON.parse(localStorage.getItem('amitFinalStore2026'));
+        if(d) {
+            document.getElementById('rawInput').value = d.raw || "";
+            document.getElementById('sName').value = d.sName || "राजकीय उच्च माध्यमिक विद्यालय, नारी";
+            document.getElementById('hText').value = d.hText || "";
+            document.getElementById('mText').value = d.mText || "";
+            document.getElementById('dept').value = d.dept || "॥ राजस्थान शिक्षा विभाग ॥";
+            document.getElementById('dt').value = d.dt || "";
+            document.getElementById('vn').value = d.vn || "";
+            document.getElementById('vt').value = d.vt || "";
+            document.getElementById('mC').value = d.mC || ""; document.getElementById('mN').value = d.mN || ""; document.getElementById('mF').value = d.mF || ""; document.getElementById('mM').value = d.mM || "";
+            document.getElementById('gName').value = d.gN || ""; document.getElementById('gMob').value = d.gM || "";
+            updateFilters();
         }
-        
-        actionButtons.forEach(btn => btn.style.display = 'flex');
-        pdf.save('Invitations.pdf');
     }
+    window.onload = loadAllData;
 
-    function saveCard(btn) {
-        const frame = btn.parentElement.previousElementSibling;
-        html2canvas(frame, { scale: 3 }).then(canvas => {
-            const link = document.createElement('a');
-            link.download = 'Invitation.png'; link.href = canvas.toDataURL(); link.click();
-        });
-    }
-
-    function sendWA(person, father, className, mobile) {
-        const s = document.getElementById('sName').value, h = document.getElementById('hText').value, m = document.getElementById('mText').value;
-        const e = document.getElementById('eText').value, v = document.getElementById('vPlace').value, vt = document.getElementById('vText').value;
-        let d = father ? `\n*Name:* ${person}\n*Father:* Mr. ${father}\n*Class:* ${className}` : `\n*Guest:* ${person}`;
-        const final = `*${s}*\n\n*${h}*\n\nआदरणीय अभिभावक,\n${m}\n${d}\n\n${e}\n${v}\n\n*विनीत:* ${vt}`;
-        window.open(`https://wa.me/${mobile ? '91'+mobile : ''}?text=${encodeURIComponent(final)}`, '_blank');
-    }
+    document.getElementById('lImg').onchange = (e) => { const r = new FileReader(); r.onload=()=>leftLogo=r.result; r.readAsDataURL(e.target.files[0]); };
+    document.getElementById('rImg').onchange = (e) => { const r = new FileReader(); r.onload=()=>rightLogo=r.result; r.readAsDataURL(e.target.files[0]); };
+    document.getElementById('bgImg').onchange = (e) => { const r = new FileReader(); r.onload=()=>watermark=r.result; r.readAsDataURL(e.target.files[0]); };
+    function updateFilters() { const input = document.getElementById('rawInput').value.trim(); const filter = document.getElementById('classFilter'); const classes = new Set(); input.split('\n').forEach(line => { const d = line.split(/\t/); if(d[0]) classes.add(d[0].trim()); }); filter.innerHTML = '<option value="all">सभी क्लास</option>'; Array.from(classes).sort().forEach(c => { const opt = document.createElement('option'); opt.value = c; opt.innerText = "Class: " + c; filter.appendChild(opt); }); }
 
     function render() {
         const area = document.getElementById('outArea'); area.innerHTML = '';
-        const m = document.getElementById('mode').value, sName = document.getElementById('sName').value, hText = document.getElementById('hText').value;
-        const mText = document.getElementById('mText').value, eText = document.getElementById('eText').value, vPlace = document.getElementById('vPlace').value;
-        const vText = document.getElementById('vText').value, filter = document.getElementById('classFilter').value;
+        const grid = document.getElementById('gridMode').value, sName = document.getElementById('sName').value;
+        const mode = document.getElementById('mode').value, hText = document.getElementById('hText').value, mText = document.getElementById('mText').value;
+        const dept = document.getElementById('dept').value, filter = document.getElementById('classFilter').value;
         
         let list = [];
-        if(m==='bulk') {
-            document.getElementById('rawInput').value.trim().split('\n').forEach(line => {
-                let d = line.split(/\t/);
-                if(d[1] && (filter === 'all' || d[0].trim() === filter)) list.push({ c1: d[0], c2: d[1], c3: d[2], mob: d[3] || "", type: 'student' });
+        if(mode==='bulk') {
+            document.getElementById('rawInput').value.trim().split('\n').forEach((line) => {
+                let d = line.split(/\t/); if(d[1] && (filter === 'all' || d[0].trim() === filter)) list.push({ c1: d[0], c2: d[1], c3: d[2], mob: d[3]||"", type: 'stu' });
             });
-        } else if(m==='manual') {
-            list.push({ c1: document.getElementById('mC').value, c2: document.getElementById('mN').value, c3: document.getElementById('mF').value, mob: document.getElementById('mM').value, type: 'student' });
+        } else if(mode==='manual') {
+            list.push({ c1: document.getElementById('mC').value, c2: document.getElementById('mN').value, c3: document.getElementById('mF').value, mob: document.getElementById('mM').value, type: 'stu' });
         } else {
-            list.push({ c1: document.getElementById('gN').value, c2: "", c3: "", mob: document.getElementById('gM').value, type: 'guest' });
+            list.push({ c1: 'Guest', c2: document.getElementById('gName').value, mob: document.getElementById('gMob').value, type: 'guest' });
         }
 
-        const build = (d) => {
-            let info = (d.type==='guest') ? `Guest: ${d.c1}` : `<span>Class: ${d.c1}</span> <span>Name: ${d.c2}</span> <span>Father: Mr. ${d.c3}</span>`;
-            return `
+        const build = (d) => `
             <div class="card-unit">
-                <div class="card-frame">
-                    ${watermark ? `<img src="${watermark}" class="watermark-img">` : ''}
+                <div class="card-frame size-${grid}">
+                    ${watermark ? `<img src="${watermark}" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:35%; opacity:0.12;">` : ''}
                     <div class="card-header">
-                        <div class="logo-container">${leftLogo ? `<img src="${leftLogo}" class="logo-box">` : ''}</div>
-                        <div class="school-title-area"><small>॥ राजस्थान शिक्षा विभाग ॥</small><h2>${sName}</h2><div style="border-bottom:2px solid #000; width:80%; margin:4px auto;"></div></div>
-                        <div class="logo-container">${rightLogo ? `<img src="${rightLogo}" class="logo-box">` : ''}</div>
+                        <img src="${leftLogo || ''}" class="logo-box">
+                        <div class="school-info"><small>${dept}</small><h2>${sName}</h2></div>
+                        <img src="${rightLogo || ''}" class="logo-box">
                     </div>
                     <div class="card-body">
-                        <div class="invitation-heading">${hText}</div>
-                        <p class="msg-text"><b>आदरणीय महानुभाव,</b><br>${mText}</p>
-                        <div class="info-strip">${info}</div>
+                        <h3 style="text-decoration:underline; font-size:18px; color:#000; margin-bottom:2px;">${hText}</h3>
+                        <p class="msg-text">${mText}</p>
+                        <div class="info-strip">${d.type==='stu' ? `<span>Class :- ${d.c1}</span> <span>Name :- ${d.c2}</span> <span>Father's Name :- Mr. ${d.c3}</span>` : `<span>Guest :- ${d.c2}</span>`}</div>
                     </div>
-                    <div class="card-footer">
-                        <div class="footer-line"><span>${eText}</span><span>${vPlace}</span></div>
-                        <div style="text-align:right; font-weight:bold; margin-top:3px; font-size:14px;">विनीत: ${vText}</div>
-                    </div>
+                    <div class="footer-line"><span>${document.getElementById('dt').value}</span><span>${document.getElementById('vn').value}</span><span>विनीत: ${document.getElementById('vt').value}</span></div>
                 </div>
-                <div class="card-actions no-print">
-                    <button class="btn-dl" onclick="saveCard(this)" style="background:#444; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer;">💾 Save Photo</button>
-                    <button class="btn-wa" onclick="sendWA('${d.c2 || d.c1}', '${d.c3}', '${d.c1}', '${d.mob}')" style="background:#25D366; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer;">📱 WhatsApp</button>
+                <div class="card-actions no-print" style="display:flex; gap:10px; margin-top:5px; margin-bottom:15px;">
+                    <button class="btn" style="background:#25D366; color:white; padding:5px 15px; margin:0;" onclick="window.open('https://wa.me/91${d.mob}')">WhatsApp Send</button>
+                    <button class="btn" style="background:#444; color:white; padding:5px 15px; margin:0;" onclick="saveImg(this)">Save Image</button>
                 </div>
             </div>`;
-        };
 
-        for (let i = 0; i < list.length; i += 2) {
+        const perPage = parseInt(grid);
+        for (let i = 0; i < list.length; i += perPage) {
             let p = document.createElement('div'); p.className = 'page';
-            p.innerHTML = build(list[i]) + (list[i+1] ? build(list[i+1]) : "");
+            for(let j = 0; j < perPage; j++) { if(list[i+j]) p.innerHTML += build(list[i+j]); }
             area.appendChild(p);
         }
+    }
+    function saveImg(btn) { html2canvas(btn.parentElement.previousElementSibling, { scale: 3 }).then(canvas => { const link = document.createElement('a'); link.download = 'Invitation.png'; link.href = canvas.toDataURL(); link.click(); }); }
+    async function saveAsPDF() {
+        const pages = document.querySelectorAll('.page'); const { jsPDF } = window.jspdf; const pdf = new jsPDF('p', 'mm', 'a4');
+        for (let i = 0; i < pages.length; i++) {
+            const canvas = await html2canvas(pages[i], { scale: 2, onclone: (cl) => cl.querySelectorAll('.card-actions').forEach(a => a.style.display='none') });
+            if (i > 0) pdf.addPage(); pdf.addImage(canvas.toDataURL('image/jpeg', 0.8), 'JPEG', 0, 0, 210, 297);
+        }
+        pdf.save('Invitations.pdf');
     }
 </script>
 </body>
