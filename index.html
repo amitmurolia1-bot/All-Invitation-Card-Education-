@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="hi">
 <head>
@@ -71,7 +70,7 @@
         <marquee scrollamount="11">🚀 DEVELOPED BY: AMIT MUROLIA (BCI) | GOVT SR SEC SCHOOL NARI, CHIRAWA ✨</marquee>
     </div>
     <div class="slogan-box">
-        <h1 style="color:var(--gold)">"उठो, जागो और तब तक मत रुको जब तक लक्ष्य प्राप्त न हो जाए"</h1>
+        <h1 style="color:var(--gold)">"उठो, जागो और तब तक मत रुको तक लक्ष्य प्राप्त न हो जाए"</h1>
         <p style="color:white; font-size:20px;">— स्वामी विवेकानंद</p>
     </div>
     <div class="login-card">
@@ -161,7 +160,7 @@
             <button class="btn btn-gen" onclick="render()">✅ कार्ड तैयार करें</button>
             <button class="btn" style="background:#3b82f6; color:white;" onclick="window.print()">🖨️ Direct Print</button>
             <button class="btn" style="background:#000; color:white;" onclick="saveAsPDF()">📄 Save as PDF</button>
-            <button class="btn" style="background:#475569; color:white; margin-top:20px;" onclick="localStorage.clear(); location.reload();">🗑️ Clear Data</button>
+            <button class="btn" style="background:#475569; color:white; margin-top:15px;" onclick="localStorage.clear(); location.reload();">🗑️ Clear Data</button>
         </div>
         <div class="preview-pane" id="outArea"></div>
     </div>
@@ -206,6 +205,24 @@
     document.getElementById('bgImg').onchange = (e) => { const r = new FileReader(); r.onload=()=>watermark=r.result; r.readAsDataURL(e.target.files[0]); };
     function updateFilters() { const input = document.getElementById('rawInput').value.trim(); const filter = document.getElementById('classFilter'); const classes = new Set(); input.split('\n').forEach(line => { const d = line.split(/\t/); if(d[0]) classes.add(d[0].trim()); }); filter.innerHTML = '<option value="all">सभी क्लास</option>'; Array.from(classes).sort().forEach(c => { const opt = document.createElement('option'); opt.value = c; opt.innerText = "Class: " + c; filter.appendChild(opt); }); }
 
+    function sendWhatsApp(mob, name, father, cls) {
+        const sName = document.getElementById('sName').value;
+        const hText = document.getElementById('hText').value;
+        const mText = document.getElementById('mText').value;
+        const dt = document.getElementById('dt').value;
+        const vn = document.getElementById('vn').value;
+        const vt = document.getElementById('vt').value;
+
+        let personalInfo = father ? `\n\n*Class :-* ${cls}\n*Name :-* ${name}\n*Father's Name :-* Mr. ${father}` : `\n\n*Guest :-* ${name}`;
+        
+        const message = `*${sName}*\n\n*${hText}*\n\nआदरणीय अभिभावक, \n${mText}${personalInfo}\n\n${dt}\n${vn}\n\n*विनीत:* ${vt}`;
+        
+        // Mobile number logic: if empty, send empty string to WA to open chat selection
+        const targetNumber = (mob && mob.trim() !== "") ? "91" + mob.trim() : "";
+        
+        window.open(`https://wa.me/${targetNumber}?text=${encodeURIComponent(message)}`, '_blank');
+    }
+
     function render() {
         const area = document.getElementById('outArea'); area.innerHTML = '';
         const grid = document.getElementById('gridMode').value, sName = document.getElementById('sName').value;
@@ -240,7 +257,7 @@
                     <div class="footer-line"><span>${document.getElementById('dt').value}</span><span>${document.getElementById('vn').value}</span><span>विनीत: ${document.getElementById('vt').value}</span></div>
                 </div>
                 <div class="card-actions no-print" style="display:flex; gap:10px; margin-top:5px; margin-bottom:15px;">
-                    <button class="btn" style="background:#25D366; color:white; padding:5px 15px; margin:0;" onclick="window.open('https://wa.me/91${d.mob}')">WhatsApp Send</button>
+                    <button class="btn" style="background:#25D366; color:white; padding:5px 15px; margin:0;" onclick="sendWhatsApp('${d.mob}', '${d.c2}', '${d.c3}', '${d.c1}')">WhatsApp Send</button>
                     <button class="btn" style="background:#444; color:white; padding:5px 15px; margin:0;" onclick="saveImg(this)">Save Image</button>
                 </div>
             </div>`;
@@ -252,6 +269,7 @@
             area.appendChild(p);
         }
     }
+
     function saveImg(btn) { html2canvas(btn.parentElement.previousElementSibling, { scale: 3 }).then(canvas => { const link = document.createElement('a'); link.download = 'Invitation.png'; link.href = canvas.toDataURL(); link.click(); }); }
     async function saveAsPDF() {
         const pages = document.querySelectorAll('.page'); const { jsPDF } = window.jspdf; const pdf = new jsPDF('p', 'mm', 'a4');
