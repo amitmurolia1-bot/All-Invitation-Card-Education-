@@ -36,7 +36,7 @@
         .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px; }
         .btn-gen { background: var(--gold); color: black; }
 
-        /* --- Card Layout --- */
+        /* --- Card Unit Layout --- */
         .page { background: #f1f5f9; width: 210mm; min-height: 296mm; margin: 0 auto; padding: 8mm 0; display: flex; flex-direction: column; align-items: center; box-sizing: border-box; }
         .card-unit { page-break-inside: avoid; display: flex; flex-direction: column; align-items: center; width: 100%; margin-bottom: 5mm; }
         .card-frame { border: 8px double var(--primary); padding: 10px; position: relative; background: #fff; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; overflow: hidden; width: 190mm; }
@@ -122,7 +122,7 @@
             <label>कार्य मोड चुनें</label>
             <select id="mode" onchange="toggleMode()">
                 <option value="bulk">📊 एक्सेल बल्क (Bulk)</option>
-                <option value="manual">✏️ मैन्युअल (Manual)</option>
+                <option value="manual">✏️ मैन्युअल छात्र (Manual)</option>
                 <option value="guest">👤 अतिथि (Guest)</option>
             </select>
 
@@ -143,6 +143,7 @@
             <label>विभाग का नाम</label><input type="text" id="dept" value="॥ राजस्थान शिक्षा विभाग ॥" oninput="saveAllData()">
             <label>स्कूल का नाम</label><input type="text" id="sName" value="राजकीय उच्च माध्यमिक विद्यालय, नारी" oninput="saveAllData()">
             <label>कार्ड हेडिंग</label><input type="text" id="hText" value="निमंत्रण: निपुण मेला एवं मेगा PTM" oninput="saveAllData()">
+            <label>सम्बोधन (Salutation)</label><input type="text" id="salut" value="आदरणीय अभिभावक," oninput="saveAllData()">
             <label>संदेश</label><textarea id="mText" oninput="saveAllData()">सादर नमस्कार। विद्यालय में अध्ययनरत विद्यार्थियों के शैक्षणिक कौशल प्रदर्शन हेतु "निपुण मेला" एवं "मेगा पी.टी.एम." का आयोजन किया जा रहा है। बच्चों के सर्वांगीण विकास हेतु आपकी गरिमामयी उपस्थिति सादर अपेक्षित है।</textarea>
             
             <label>दिनांक / स्थान / विनीत</label>
@@ -178,16 +179,17 @@
     }
 
     function saveAllData() {
-        const d = { raw: document.getElementById('rawInput').value, sName: document.getElementById('sName').value, hText: document.getElementById('hText').value, mText: document.getElementById('mText').value, dept: document.getElementById('dept').value, dt: document.getElementById('dt').value, vn: document.getElementById('vn').value, vt: document.getElementById('vt').value, mC: document.getElementById('mC').value, mN: document.getElementById('mN').value, mF: document.getElementById('mF').value, mM: document.getElementById('mM').value, gN: document.getElementById('gName').value, gM: document.getElementById('gMob').value };
-        localStorage.setItem('amitFinalStore2026', JSON.stringify(d));
+        const d = { raw: document.getElementById('rawInput').value, sName: document.getElementById('sName').value, hText: document.getElementById('hText').value, salut: document.getElementById('salut').value, mText: document.getElementById('mText').value, dept: document.getElementById('dept').value, dt: document.getElementById('dt').value, vn: document.getElementById('vn').value, vt: document.getElementById('vt').value, mC: document.getElementById('mC').value, mN: document.getElementById('mN').value, mF: document.getElementById('mF').value, mM: document.getElementById('mM').value, gN: document.getElementById('gName').value, gM: document.getElementById('gMob').value };
+        localStorage.setItem('amitFinalStore2026_V2', JSON.stringify(d));
     }
 
     function loadAllData() {
-        const d = JSON.parse(localStorage.getItem('amitFinalStore2026'));
+        const d = JSON.parse(localStorage.getItem('amitFinalStore2026_V2'));
         if(d) {
             document.getElementById('rawInput').value = d.raw || "";
             document.getElementById('sName').value = d.sName || "राजकीय उच्च माध्यमिक विद्यालय, नारी";
             document.getElementById('hText').value = d.hText || "";
+            document.getElementById('salut').value = d.salut || "आदरणीय अभिभावक,";
             document.getElementById('mText').value = d.mText || "";
             document.getElementById('dept').value = d.dept || "॥ राजस्थान शिक्षा विभाग ॥";
             document.getElementById('dt').value = d.dt || "";
@@ -208,14 +210,14 @@
     function sendWhatsApp(mob, name, father, cls, type) {
         const sName = document.getElementById('sName').value;
         const hText = document.getElementById('hText').value;
+        const salut = document.getElementById('salut').value;
         const mText = document.getElementById('mText').value;
         const dt = document.getElementById('dt').value;
         const vn = document.getElementById('vn').value;
         const vt = document.getElementById('vt').value;
 
         let personalInfo = (type === 'guest') ? `\n\n*Guest :-* ${name}` : `\n\n*Class :-* ${cls}\n*Name :-* ${name}\n*Father's Name :-* Mr. ${father}`;
-        
-        const message = `*${sName}*\n\n*${hText}*\n\nआदरणीय अभिभावक, \n${mText}${personalInfo}\n\n${dt}\n${vn}\n\n*विनीत:* ${vt}`;
+        const message = `*${sName}*\n\n*${hText}*\n\n${salut}\n${mText}${personalInfo}\n\n${dt}\n${vn}\n\n*विनीत:* ${vt}`;
         const targetNumber = (mob && mob.trim() !== "") ? "91" + mob.trim() : "";
         window.open(`https://wa.me/${targetNumber}?text=${encodeURIComponent(message)}`, '_blank');
     }
@@ -224,7 +226,7 @@
         const area = document.getElementById('outArea'); area.innerHTML = '';
         const grid = document.getElementById('gridMode').value, sName = document.getElementById('sName').value;
         const mode = document.getElementById('mode').value, hText = document.getElementById('hText').value, mText = document.getElementById('mText').value;
-        const dept = document.getElementById('dept').value, filter = document.getElementById('classFilter').value;
+        const salut = document.getElementById('salut').value, dept = document.getElementById('dept').value, filter = document.getElementById('classFilter').value;
         
         let list = [];
         if(mode==='bulk') {
@@ -248,7 +250,7 @@
                     </div>
                     <div class="card-body">
                         <h3 style="text-decoration:underline; font-size:18px; color:#000; margin-bottom:2px;">${hText}</h3>
-                        <p class="msg-text">${mText}</p>
+                        <p class="msg-text"><b>${salut}</b><br>${mText}</p>
                         <div class="info-strip">${d.type==='stu' ? `<span>Class :- ${d.c1}</span> <span>Name :- ${d.c2}</span> <span>Father's Name :- Mr. ${d.c3}</span>` : `<span>Guest :- ${d.c2}</span>`}</div>
                     </div>
                     <div class="footer-line"><span>${document.getElementById('dt').value}</span><span>${document.getElementById('vn').value}</span><span>विनीत: ${document.getElementById('vt').value}</span></div>
